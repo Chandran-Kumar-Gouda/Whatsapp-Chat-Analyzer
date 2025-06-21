@@ -1,5 +1,6 @@
 from urlextract import URLExtract
 from wordcloud import WordCloud
+import pandas as pd
 
 extractor = URLExtract()
 def fetch_stats(selected_user , df):
@@ -18,7 +19,7 @@ def fetch_stats(selected_user , df):
     
 
     # fetch number of media messages
-    media_message = df['message'].value_counts()["<Media omitted>\n"]
+    media_message = df[df['message'] == "<Media omitted>\n"].shape[0]
 
     # fetch the number of linked shared
     
@@ -39,6 +40,39 @@ def create_wordCloud(selected_user ,df):
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
     
+    # remove all group notification
+    temp = df[df['user'] != 'group_notification']
+    # remove all <Media omitted>
+    temp = temp[temp['message'] != '<Media omitted>\n'] 
+    
     wc = WordCloud(width=500 ,height=500 ,min_font_size=10 ,background_color='white')
     df_wc =wc.generate(df['message'].str.cat(sep=" "))
     return df_wc
+
+def most_common_words(selected_user , df):
+    f = open('stopwords_hinglish_odia.txt','r')
+    stop_words = f.read()
+
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+
+    if df.empty:
+        return pd.DataFrame(columns=['Word', 'Frequency']) 
+
+    # remove all group notification
+    temp = df[df['user'] != 'group_notification']
+    # remove all <Media omitted>
+    temp = temp[temp['message'] != '<Media omitted>\n']
+
+    words = []
+    # usernames = set(df['user'].unique())
+    # username_list = list(usernames)
+    for message in temp['message']:
+        for word in message.lower().split():
+            if word not in stop_words:
+                    words.append(word)
+
+    from collections import Counter
+    most_common_df = pd.DataFrame(Counter(words).most_common(2), columns=['Word', 'Frequency'])
+
+    return most_common_df

@@ -71,5 +71,18 @@ if uploaded_file is not None:
         ax.imshow(df_wc)
         st.pyplot(fig)
 
+        # most common words 
+
+        most_common_df = helper.most_common_words(selected_user, df)
+
+        if most_common_df.empty:
+            st.warning("No common words found for the selected user.")
+        else:
+            fig, ax = plt.subplots()
+            ax.barh(most_common_df.iloc[:, 0], most_common_df.iloc[:, 1], color='skyblue') 
+            plt.xticks(rotation="vertical")
+            st.pyplot(fig)
+
+
             
 
