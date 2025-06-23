@@ -1,6 +1,8 @@
 from urlextract import URLExtract
 from wordcloud import WordCloud
 import pandas as pd
+import emoji
+from collections import Counter
 
 extractor = URLExtract()
 def fetch_stats(selected_user , df):
@@ -37,6 +39,8 @@ def most_busiest_users(df):
     return x ,new_df
 
 def create_wordCloud(selected_user ,df):
+    f = open('stopwords_hinglish_odia.txt','r')
+    stop_words = f.read()
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
     
@@ -45,8 +49,18 @@ def create_wordCloud(selected_user ,df):
     # remove all <Media omitted>
     temp = temp[temp['message'] != '<Media omitted>\n'] 
     
+    words =[]
+    def remove_stop_words(message):
+        y=[]
+        for word in message.lower().split():
+            if word not in stop_words:
+                y.append(word)
+        return " ".join(y)
+
+    
     wc = WordCloud(width=500 ,height=500 ,min_font_size=10 ,background_color='white')
-    df_wc =wc.generate(df['message'].str.cat(sep=" "))
+    temp['message']= temp['message'].apply(remove_stop_words)
+    df_wc =wc.generate(temp['message'].str.cat(sep=" "))
     return df_wc
 
 def most_common_words(selected_user , df):
@@ -73,6 +87,38 @@ def most_common_words(selected_user , df):
                     words.append(word)
 
     from collections import Counter
-    most_common_df = pd.DataFrame(Counter(words).most_common(2), columns=['Word', 'Frequency'])
+    most_common_df = pd.DataFrame(Counter(words).most_common(20), columns=['Word', 'Frequency']) # takes out 20 most common words
 
     return most_common_df
+
+def emoji_helper(selected_user, df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+
+    emojis = []
+    for message in df['message']:
+        for c in message:
+            if emoji.is_emoji(c):  # valid for emoji<2.0
+                emojis.append(c)
+
+    emoji_count = Counter(emojis)
+    emoji_df = pd.DataFrame(emoji_count.most_common(), columns=['Emoji', 'Count'])
+    return emoji_df
+
+def monthly_timeline(selected_user ,df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+
+    monthly_timeline = df.groupby(['Year' ,'month_num' ,'month']).count()['message'].reset_index()
+    time = []
+    for i in range(monthly_timeline.shape[0]):
+        time.append(monthly_timeline['month'][i] + "-" + str(monthly_timeline['Year'][i]))
+    
+    monthly_timeline['time'] = time
+    return monthly_timeline        
+
+def daily_timeline(selected_user , df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+    daily_timeline = df.groupby('only_date').count()['message'].reset_index()
+    return daily_timeline

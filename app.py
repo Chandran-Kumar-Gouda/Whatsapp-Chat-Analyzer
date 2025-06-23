@@ -25,7 +25,7 @@ if uploaded_file is not None:
 
     if st.sidebar.button("show analysis"):
         num_messages , total_words ,total_media , total_links = helper.fetch_stats(selected_user ,df)
-
+        st.title("Top Statictics")
         col1 ,col2 ,col3, col4 = st.columns(4)  #Splits the Streamlit layout into 4 horizontal columns side-by-side.
 
         with col1:
@@ -42,6 +42,23 @@ if uploaded_file is not None:
         with col4:
             st.header("Total links")
             st.title(total_links)
+         
+        # monthly timeline
+        st.title("Monthly Timeline")
+        monthly_timeline = helper.monthly_timeline(selected_user ,df)
+        fig ,ax = plt.subplots()
+        ax.plot(monthly_timeline['time'] , monthly_timeline['message'])
+        plt.xticks(rotation='vertical')
+        st.pyplot(fig)
+        
+        # daily timeline
+        st.title("Daily Timeline")
+        Daily_timeline = helper.daily_timeline(selected_user ,df)
+        fig ,ax = plt.subplots()
+        ax.plot(Daily_timeline['only_date'] , Daily_timeline['message'])
+        plt.xticks(rotation='vertical')
+        st.pyplot(fig)
+
 
         # Findind the busiest user in the group
 
@@ -81,6 +98,25 @@ if uploaded_file is not None:
             fig, ax = plt.subplots()
             ax.barh(most_common_df.iloc[:, 0], most_common_df.iloc[:, 1], color='skyblue') 
             plt.xticks(rotation="vertical")
+            st.pyplot(fig)
+        
+        # emoji Analysis
+
+        plt.rcParams['font.family'] = 'Segoe UI Emoji'
+
+        emoji_df = helper.emoji_helper(selected_user,df)
+        st.title("Emoji Analysis")
+
+        col1 ,col2 = st.columns(2)
+
+        with col1:
+            st.dataframe(emoji_df)
+        
+        with col2:
+            emoji_df =emoji_df.head(10)
+            fig ,ax = plt.subplots()
+            ax.pie(emoji_df.iloc[:,1] ,labels=emoji_df.iloc[:,0] , autopct="%0.2f" ,startangle=90 ) # displaying a pie chart for top 10 emojis
+            ax.axis("equal")  # Make pie chart circular
             st.pyplot(fig)
 
 
