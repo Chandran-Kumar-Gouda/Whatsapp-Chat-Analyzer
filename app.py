@@ -3,6 +3,7 @@ import preprocessor
 import pandas as pd
 import helper
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.sidebar.title("WhatsApp Chat Analyzer")
 
@@ -58,7 +59,33 @@ if uploaded_file is not None:
         ax.plot(Daily_timeline['only_date'] , Daily_timeline['message'])
         plt.xticks(rotation='vertical')
         st.pyplot(fig)
+        
+        # activity map
+        st.title('Activity map')
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.title("Most busy day")
+            weekly_user = helper.weekely_activity_map(selected_user,df)
+            fig ,ax = plt.subplots()
+            ax.plot(weekly_user.index ,weekly_user.values ,color ='green')
+            plt.xticks(rotation='vertical')
+            st.pyplot(fig)
+        
+        with col2:
+            st.title("Most busy month")
+            monthly_user = helper.monthly_activity_map(selected_user,df)
+            fig ,ax = plt.subplots()
+            ax.plot(monthly_user.index ,monthly_user.values ,color ='orange')
+            plt.xticks(rotation='vertical')
+            st.pyplot(fig)
 
+        # weekly heatmap 
+        st.title("Weekly Heatmap")
+        user_heatmap = helper.weekly_heatmap(selected_user,df)
+        fig ,ax = plt.subplots()
+        ax = sns.heatmap(user_heatmap)
+        st.pyplot(fig)
 
         # Findind the busiest user in the group
 
@@ -118,7 +145,8 @@ if uploaded_file is not None:
             ax.pie(emoji_df.iloc[:,1] ,labels=emoji_df.iloc[:,0] , autopct="%0.2f" ,startangle=90 ) # displaying a pie chart for top 10 emojis
             ax.axis("equal")  # Make pie chart circular
             st.pyplot(fig)
-
+    
+        
 
             
 

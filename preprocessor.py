@@ -43,7 +43,17 @@ def preprocess(data):
     df['hour'] =df['date'].dt.hour
     df['minute'] =df['date'].dt.minute
     df['only_date'] = df['date'].dt.date
-    
+    df['dayname'] = df['date'].dt.day_name()
+    peroids =[]
+
+    for hour in df[['dayname' ,'hour']]['hour']:
+        if hour == 23:
+            peroids.append(str(hour) + "-" +str('00'))
+        elif hour == 0:
+            peroids.append(str('00') + "-" +str(hour +1))
+        else:
+            peroids.append(str(hour) + "-" +str(hour+1))
+    df['peroids'] =peroids        
     return df
 
     

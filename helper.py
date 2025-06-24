@@ -122,3 +122,25 @@ def daily_timeline(selected_user , df):
         df = df[df['user'] == selected_user]
     daily_timeline = df.groupby('only_date').count()['message'].reset_index()
     return daily_timeline
+
+def weekely_activity_map(selected_user , df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+    
+    weekly_active_user= df['dayname'].value_counts()
+    return weekly_active_user
+
+def monthly_activity_map(selected_user , df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+    
+    monthly_active_user= df['month'].value_counts()
+    return monthly_active_user
+
+def weekly_heatmap(selected_user ,df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+
+    activity_heatmap = df.pivot_table(index='dayname' , columns ='peroids',values ='message',aggfunc='count').fillna(0)
+
+    return activity_heatmap
