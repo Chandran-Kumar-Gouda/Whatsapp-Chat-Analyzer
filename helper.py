@@ -59,25 +59,21 @@ def create_wordCloud(selected_user ,df):
     stop_words = f.read()
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
-    
-    # remove all group notification
+
     temp = df[df['user'] != 'group_notification']
-    # remove all <Media omitted>
-    temp = temp[temp['message'] != '<Media omitted>\n'] 
-    
-    words =[]
+    temp = temp[temp['message'] != '<Media omitted>\n']
+
     def remove_stop_words(message):
-        y=[]
+        y = []
         for word in message.lower().split():
             if word not in stop_words:
                 y.append(word)
         return " ".join(y)
-
     
-    wc = WordCloud(width=500 ,height=500 ,min_font_size=10 ,background_color='white')
-    temp['message']= temp['message'].apply(remove_stop_words)
-    df_wc =wc.generate(temp['message'].str.cat(sep=" "))
-    return df_wc
+    wc = WordCloud(width=500,height=500,min_font_size=10,background_color='white')
+    temp['message'] = temp['message'].apply(remove_stop_words)
+    df_wc = wc.generate(temp['message'].str.cat(sep=" "))
+    return df_wc 
 
 def most_common_words(selected_user , df):
     f = open('stopwords_hinglish_odia.txt','r')

@@ -127,7 +127,8 @@ if uploaded_file is not None:
         st.title("Word Cloud")
         df_wc = helper.create_wordCloud(selected_user, df)
         fig ,ax = plt.subplots()
-        ax.imshow(df_wc)
+        ax.imshow(df_wc.to_array(), interpolation='bilinear')
+        ax.axis("off")
         st.pyplot(fig)
 
         # most common words 

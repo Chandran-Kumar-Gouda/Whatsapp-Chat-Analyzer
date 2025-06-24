@@ -27,9 +27,6 @@ def preprocess(data):
         # Remove HTML-like tags
         message = re.sub(r'<[^>]+>', '', message)
 
-        # Remove symbols used in code
-        message = re.sub(r'[{}\[\]();:<>+=*/\\|&^%$#@!~`]', '', message)
-
         # Remove code-like variable assignments or function calls
         message = re.sub(r'\w+\s*=\s*[^,\s]+', '', message)  # e.g., x = 5
         message = re.sub(r'\w+\([^)]*\)', '', message) 
