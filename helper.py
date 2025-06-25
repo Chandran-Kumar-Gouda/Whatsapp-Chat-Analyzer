@@ -28,8 +28,23 @@ def fetch_stats(selected_user , df):
     links = []
     for message in df['message']:
         links.extend(extractor.find_urls(message)) 
+    
+    #  Average messages per day
+    avg_msgs_per_day = round(df.shape[0] / df['only_date'].nunique(), 2)
+    
+    #Average Words Per Message
+    avg_words_per_msg  = round(len(words) / num_messages, 2) if num_messages else 0
 
-    return num_messages ,len(words) ,media_message ,len(links)
+    #Most active date
+    most_active_date = df['only_date'].mode()[0]
+    
+    
+    
+    # emoji df
+    emoji_df = emoji_helper(selected_user, df)
+    total_emojis = emoji_df['Count'].sum()
+
+    return num_messages ,len(words) ,media_message ,len(links) ,avg_msgs_per_day ,avg_words_per_msg,most_active_date ,total_emojis
 
 def most_busiest_users(df):
     x = df['user'].value_counts().head()
@@ -37,6 +52,7 @@ def most_busiest_users(df):
     # how much percentage each user contibuted to whole group message
     new_df = round((df['user'].value_counts() / df['user'].shape[0])*100 ,2).reset_index().rename(columns={'user':'Name' ,'count':'Percent'}) 
     return x ,new_df
+
 
 def create_wordCloud(selected_user ,df):
     f = open('stopwords_hinglish_odia.txt','r')

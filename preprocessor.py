@@ -24,6 +24,15 @@ def preprocess(data):
     messages =[]
 
     for message in df['user_message']:
+        # Remove HTML-like tags
+        message = re.sub(r'<[^>]+>', '', message)
+
+        # Remove symbols used in code
+        message = re.sub(r'[{}\[\]();:<>+=*/\\|&^%$#@!~`]', '', message)
+
+        # Remove code-like variable assignments or function calls
+        message = re.sub(r'\w+\s*=\s*[^,\s]+', '', message)  # e.g., x = 5
+        message = re.sub(r'\w+\([^)]*\)', '', message) 
         entry = re.split('([\w\W]+?):\s',message)
         if entry[1:]:  # user name
             users.append(entry[1])

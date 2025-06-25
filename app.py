@@ -25,7 +25,7 @@ if uploaded_file is not None:
     selected_user = st.sidebar.selectbox("Show analysis wrt" ,user_list)  # Dropdown in sidebar to select a user for analysis
 
     if st.sidebar.button("show analysis"):
-        num_messages , total_words ,total_media , total_links = helper.fetch_stats(selected_user ,df)
+        num_messages , total_words ,total_media , total_links ,avg_msgs_per_day  ,avg_words_per_msg  ,most_active_date ,total_emojis  = helper.fetch_stats(selected_user ,df)
         st.title("Top Statictics")
         col1 ,col2 ,col3, col4 = st.columns(4)  #Splits the Streamlit layout into 4 horizontal columns side-by-side.
 
@@ -43,7 +43,22 @@ if uploaded_file is not None:
         with col4:
             st.header("Total links")
             st.title(total_links)
-         
+        
+        col5, col6, col7, col8 = st.columns(4)
+        
+        with col5:
+            st.header("Avg Msgs per Day")
+            st.title(avg_msgs_per_day)
+        with col6:
+            st.header("Avg Words per Msg")
+            st.title(avg_words_per_msg)
+        with col7:
+            st.header("Most Active Date")
+            st.title(str(most_active_date))
+        with col8:
+            st.header("Total Emojis Used")
+            st.title(total_emojis)
+        
         # monthly timeline
         st.title("Monthly Timeline")
         monthly_timeline = helper.monthly_timeline(selected_user ,df)
@@ -116,7 +131,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
         # most common words 
-
+        st.title("Most Common Words")
         most_common_df = helper.most_common_words(selected_user, df)
 
         if most_common_df.empty:
