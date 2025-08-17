@@ -196,15 +196,6 @@ if uploaded_file is not None:
         ax.bar(sentiment_count.index , sentiment_count.values )
         st.pyplot(fig)
 
-        #Topics in Chat
-        st.title("Topics in Chat")
-        topics = helper.extract_topics(selected_user,df)
-        for i, topic in enumerate(topics):
-            st.write(f"Topic {i+1}: {topic}")
-        
-        topics = helper.extract_topics(selected_user,df)
-        st.dataframe(topics)
-
          # REPORT DOWNLOAD 
         st.title("Download Full Report")
 

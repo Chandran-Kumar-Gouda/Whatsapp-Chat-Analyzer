@@ -334,31 +334,6 @@ def get_Sentiment(selected_user , df):
     return sentiment_count
     
 
-
-def extract_topics(selected_user,df, num_topics=3):
-    if selected_user != 'Overall':
-        df = df[df['user'] == selected_user]
-    texts = [msg.split() for msg in df['message'] if isinstance(msg, str)]
-    dictionary = corpora.Dictionary(texts)
-    corpus = [dictionary.doc2bow(text) for text in texts]
-    lda = models.LdaModel(corpus, num_topics=num_topics, id2word=dictionary)
-    return lda.print_topics(num_words=5)
-
-
-def extract_topics_bertopic(selected_user, df, num_topics=5):
-    if selected_user != 'Overall':
-        df = df[df['user'] == selected_user]
-    
-    messages = [msg for msg in df['message'] if isinstance(msg, str) and msg.strip()]
-    
-    if not messages:
-        return ["No messages available for topic extraction."]
-    
-    topic_model = BERTopic(top_n_words=5, nr_topics=num_topics)
-    topics, _ = topic_model.fit_transform(messages)
-    
-    return topic_model.get_topic_info().head(num_topics)
-
 def save_plot(fig):
     """
     Save a Matplotlib figure to a temporary PNG file and return the path.
