@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: whatsapp-chat-analyzer
+    env: docker
+    plan: free
+    autoDeploy: true
