@@ -9,11 +9,8 @@ import tempfile
 import base64
 from io import BytesIO
 import matplotlib.pyplot as plt
-from bertopic import BERTopic
 from prophet import Prophet
-
-
-
+import streamlit as st
 
 extractor = URLExtract()
 def fetch_stats(selected_user , df):
@@ -236,21 +233,26 @@ def daily_timeline(selected_user , df):
     daily_timeline = df.groupby('only_date').count()['message'].reset_index()
     return daily_timeline
 
+@st.cache_resource
+def get_prophet():
+    """Cache Prophet model instance to avoid recompiling Stan each time."""
+    return Prophet()
 
 def forecast_activity(df, periods=7):
     """
-    Forecast future message activity using Facebook Prophet.
     df: chat DataFrame with 'only_date' and 'message'
     periods: number of days to forecast
     """
 
+    # Aggregate daily messages
     daily_msgs = df.groupby('only_date').count()['message'].reset_index()
     daily_msgs.rename(columns={'only_date': 'ds', 'message': 'y'}, inplace=True)
 
-    model = Prophet()
+    # Load cached Prophet instance
+    model = get_prophet()
     model.fit(daily_msgs)
 
-    # Forecast for the next 'periods' days
+    # Forecast future activity
     future = model.make_future_dataframe(periods=periods)
     forecast = model.predict(future)
 

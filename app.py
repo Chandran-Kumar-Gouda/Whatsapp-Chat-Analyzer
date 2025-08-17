@@ -4,7 +4,6 @@ import pandas as pd
 import helper
 import matplotlib.pyplot as plt
 import seaborn as sns
-from bertopic import BERTopic
 import sys
 import base64      
 import tempfile 
