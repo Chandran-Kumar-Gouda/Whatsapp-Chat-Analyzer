@@ -5,3 +5,8 @@ matplotlib
 wordcloud
 emoji
 seaborn
+textblob
+gensim
+bertopic
+prophet
+pdfkit

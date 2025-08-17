@@ -1,5 +1,7 @@
 import re
 import pandas as pd
+from textblob import TextBlob
+
 def preprocess(data):
     data = data.replace('\u202f', ' ')
     
@@ -50,6 +52,7 @@ def preprocess(data):
     df['minute'] =df['date'].dt.minute
     df['only_date'] = df['date'].dt.date
     df['dayname'] = df['date'].dt.day_name()
+    df['month_peroid'] = pd.to_datetime(df['date']).dt.to_period('M')
     peroids =[]
 
     for hour in df[['dayname' ,'hour']]['hour']:
@@ -59,7 +62,30 @@ def preprocess(data):
             peroids.append(str('00') + "-" +str(hour +1))
         else:
             peroids.append(str(hour) + "-" +str(hour+1))
-    df['peroids'] =peroids        
+    df['peroids'] =peroids 
+
+    def get_sentiment(message):
+        try:
+            blob = TextBlob(message)
+            polarity = blob.sentiment.polarity
+            if polarity > 0.2:
+                return 'Positive'
+            elif polarity < -0.2:
+                return 'Negative'
+            else:
+                return 'Neutral'
+        except:
+            return 'Neutral' 
+    df['Sentiment'] = df['message'].apply(get_sentiment) 
+
+    all_dates = pd.date_range(start=df['only_date'].min(), end=df['only_date'].max())
+    active_dates = df['only_date'].unique()
+    inactive_days = [d.date() for d in all_dates if d.date() not in active_dates]
+    df.attrs['num_inactive_days'] = len(inactive_days)  # store as attribute
+     
     return df
+
+    
+   
 
     
